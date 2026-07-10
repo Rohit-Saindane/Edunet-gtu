@@ -1,13 +1,8 @@
 import os
-import urllib.request
 import pandas as pd
 
-url = "https://raw.githubusercontent.com/datasets/co2-fossil-by-nation/master/data/fossil-fuel-co2-emissions-by-nation.csv"
 script_dir = os.path.dirname(os.path.abspath(__file__))
 csv_path = os.path.join(script_dir, "fossil-fuel-co2-emissions-by-nation.csv")
-
-if not os.path.exists(csv_path):
-    urllib.request.urlretrieve(url, csv_path)
 
 df = pd.read_csv(csv_path)
 
@@ -27,14 +22,17 @@ df["Per Capita"] = df["Per Capita"].fillna(df["Per Capita"].median())
 
 print("\nNull Values after handling:\n", df.isnull().sum())
 
-latest_year = df["Year"].max()
-print(f"\nTop 5 Emitting Nations in {latest_year}:")
-print(df[df["Year"] == latest_year].sort_values(by="Total", ascending=False).head(5))
+# Sort by Total emissions descending
+df = df.sort_values(by="Total", ascending=False)
+
+print("\nSorted Dataset:")
+print(df[["Country", "Year", "Total", "Per Capita"]])
 
 print("\nSummary:")
 print("- Loaded carbon emissions dataset and handled missing values.")
 print("- Filled null emission columns with 0.0.")
 print("- Filled missing Per Capita values with median country values.")
+print("- Sorted the dataset by Total emissions in descending order.")
 print("- Exported clean data.")
 
 df.to_csv(os.path.join(script_dir, "fossil-fuel-co2-emissions-cleaned.csv"), index=False)

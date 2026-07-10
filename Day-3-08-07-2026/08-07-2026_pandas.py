@@ -1,10 +1,8 @@
 import os
-import urllib.request
 import pandas as pd
 
-url = "https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv"
-file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "titanic.csv")
-urllib.request.urlretrieve(url, file_path)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+file_path = os.path.join(script_dir, "titanic.csv")
 
 df = pd.read_csv(file_path)
 
@@ -40,5 +38,5 @@ print(df.head(2))
 print("\n--- Value Counts for Gender ---")
 print(df["Gender"].value_counts())
 
-output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "titanic_cleaned.csv")
+output_path = os.path.join(script_dir, "titanic_cleaned.csv")
 df.to_csv(output_path, index=False)

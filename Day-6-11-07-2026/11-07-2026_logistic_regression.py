@@ -20,13 +20,7 @@ if not os.path.exists(csv_path):
 df = pd.read_csv(csv_path)
 
 print("Dataset Columns:", df.columns.tolist())
-
-# Filter for recent years (2000-2022) and focus only on countries
-df_clean = df[(df['year'] >= 2000) & (df['year'] <= 2022) & (df['iso_code'].notnull())].copy()
-selected_cols = ['country', 'year', 'population', 'gdp', 'co2_per_capita', 'energy_per_capita']
-df_sub = df_clean[selected_cols].copy()
-
-print("\nInitial Null Values:\n", df_sub.isnull().sum())
+print("\nInitial Null Values:\n", df.isnull().sum())
 
 print("\nDataset generalizations and analysis:")
 print("- co2_per_capita is our primary target metric tracking emissions per person.")
@@ -35,28 +29,28 @@ print("- population scales the country's size but may have a complex relation to
 
 # Imputing missing values using country-level medians and fallback to global medians
 for col in ['gdp', 'energy_per_capita', 'population', 'co2_per_capita']:
-    df_sub[col] = df_sub[col].fillna(df_sub.groupby('country')[col].transform('median'))
-    df_sub[col] = df_sub[col].fillna(df_sub[col].median())
+    df[col] = df[col].fillna(df.groupby('country')[col].transform('median'))
+    df[col] = df[col].fillna(df[col].median())
 
-print("\nNull Values after handling:\n", df_sub.isnull().sum())
+print("\nNull Values after handling:\n", df.isnull().sum())
 
 # Feature Engineering
-df_sub['gdp_per_capita'] = df_sub['gdp'] / df_sub['population']
+df['gdp_per_capita'] = df['gdp'] / df['population']
 
-median_threshold = df_sub['co2_per_capita'].median()
+median_threshold = df['co2_per_capita'].median()
 print(f"\nUsing median threshold: {median_threshold:.2f}")
-df_sub['high_co2_per_capita'] = (df_sub['co2_per_capita'] > median_threshold).astype(int)
+df['high_co2_per_capita'] = (df['co2_per_capita'] > median_threshold).astype(int)
 
 # Visualisations
 plt.figure(figsize=(10, 6))
-sns.scatterplot(data=df_sub, x="gdp_per_capita", y="co2_per_capita", hue="high_co2_per_capita")
+sns.scatterplot(data=df, x="gdp_per_capita", y="co2_per_capita", hue="high_co2_per_capita")
 plt.xscale("log")
 plt.title("GDP/capita vs CO2/capita")
 plt.savefig(os.path.join(script_dir, "co2_gdp_vs_emissions.png"))
 plt.close()
 
 plt.figure(figsize=(10, 6))
-sns.boxplot(data=df_sub, x="high_co2_per_capita", y="energy_per_capita", hue="high_co2_per_capita", legend=False)
+sns.boxplot(data=df, x="high_co2_per_capita", y="energy_per_capita", hue="high_co2_per_capita", legend=False)
 plt.yscale("log")
 plt.title("Energy consumption per Capita by class")
 plt.savefig(os.path.join(script_dir, "co2_energy_by_class.png"))
@@ -64,10 +58,10 @@ plt.close()
 
 # Encoding and Scaling
 le = LabelEncoder()
-df_sub['country_encoded'] = le.fit_transform(df_sub['country'])
+df['country_encoded'] = le.fit_transform(df['country'])
 
-X = df_sub.drop(columns=['country', 'co2_per_capita', 'high_co2_per_capita'])
-y = df_sub['high_co2_per_capita']
+X = df.drop(columns=['country', 'co2_per_capita', 'high_co2_per_capita'])
+y = df['high_co2_per_capita']
 
 num_features = ['year', 'population', 'gdp', 'gdp_per_capita', 'energy_per_capita']
 scaler = StandardScaler()

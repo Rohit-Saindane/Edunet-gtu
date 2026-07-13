@@ -20,7 +20,7 @@ if not os.path.exists(csv_path):
 df = pd.read_csv(csv_path)
 
 print("Dataset Columns:", df.columns.tolist())
-print("\nInitial Null Values:\n", df[['manufacturer', 'category', 'gwp_total', 'lifetime', 'weight']].isnull().sum())
+print("\nInitial Null Values:\n", df.isnull().sum())
 
 print("\nDataset generalizations and analysis:")
 print("- gwp_total represents the total Greenhouse Warming Potential carbon footprint of the device.")
@@ -28,37 +28,34 @@ print("- weight (kg) is directly proportional to the carbon footprint (gwp_total
 print("- lifetime (years) represents the device lifespan, which relates to how long the device is used.")
 print("- category represents the type of hardware (Workplace, Datacenter, Home).")
 
-selected_cols = ['gwp_total', 'weight', 'lifetime', 'category', 'manufacturer']
-df_sub = df[selected_cols].copy()
-
 # Handling missing values
-df_sub['lifetime'] = df_sub['lifetime'].fillna(df_sub.groupby('category')['lifetime'].transform('median'))
-df_sub['lifetime'] = df_sub['lifetime'].fillna(df_sub['lifetime'].median())
+df['lifetime'] = df['lifetime'].fillna(df.groupby('category')['lifetime'].transform('median'))
+df['lifetime'] = df['lifetime'].fillna(df['lifetime'].median())
 
-df_sub['weight'] = df_sub['weight'].fillna(df_sub.groupby('category')['weight'].transform('median'))
-df_sub['weight'] = df_sub['weight'].fillna(df_sub['weight'].median())
+df['weight'] = df['weight'].fillna(df.groupby('category')['weight'].transform('median'))
+df['weight'] = df['weight'].fillna(df['weight'].median())
 
-print("\nNull Values after handling:\n", df_sub.isnull().sum())
+print("\nNull Values after handling:\n", df.isnull().sum())
 
 # Feature Engineering
-df_sub['weight_lifetime_ratio'] = df_sub['weight'] / df_sub['lifetime']
+df['weight_lifetime_ratio'] = df['weight'] / df['lifetime']
 
 # Visualisations
 plt.figure(figsize=(10, 6))
-sns.scatterplot(data=df_sub, x="weight", y="gwp_total", hue="category")
+sns.scatterplot(data=df, x="weight", y="gwp_total", hue="category")
 plt.title("Device Weight vs GWP Total")
 plt.savefig(os.path.join(script_dir, "boavizta_weight_vs_gwp.png"))
 plt.close()
 
 plt.figure(figsize=(10, 6))
-sns.boxplot(data=df_sub, x="category", y="gwp_total", hue="category", legend=False)
+sns.boxplot(data=df, x="category", y="gwp_total", hue="category", legend=False)
 plt.title("GWP Total by Category")
 plt.yscale("log")
 plt.savefig(os.path.join(script_dir, "boavizta_gwp_by_category.png"))
 plt.close()
 
 # Encoding and Scaling
-df_encoded = pd.get_dummies(df_sub, columns=['category', 'manufacturer'], drop_first=True)
+df_encoded = pd.get_dummies(df, columns=['category', 'manufacturer'], drop_first=True)
 
 X = df_encoded.drop(columns=['gwp_total'])
 y_log = np.log1p(df_encoded['gwp_total'])

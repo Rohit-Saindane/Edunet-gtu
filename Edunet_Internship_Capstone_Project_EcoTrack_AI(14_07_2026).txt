@@ -1,0 +1,18 @@
+------------------------------------------------------------
+                CAPSTONE PROJECT DETAILS
+------------------------------------------------------------
+
+Project Title:
+EcoTrack AI – Intelligent Carbon Footprint Tracker and Sustainability Planner
+
+Project Domain:
+Artificial Intelligence | Machine Learning | Sustainability | Green Skills | Data Analytics
+
+Project Description:
+EcoTrack AI is an AI-powered personal and organizational carbon footprint analyzer that processes user consumption habits (energy consumption, transit choices, food habits, and waste) to classify user profiles and recommend custom sustainability steps. Using K-Means clustering, the system groups users with similar consumption patterns and offers targeted recommendations on reducing footprints. It features interactive graphs of footprint breakdowns, a chatbot assistant providing quick environmental advice, and actionable daily/weekly sustainability challenges to build green skills.
+
+Group Members:
+1. Rohit Saindane (Lead / Repo Owner) - rohitsaindane36@gmail.com
+2. Aniket Yadav
+3. Pooja Patil
+4. Karan Sharma
